@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Интерактивный тест по дыхательной системе (ГИА 2025)</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin: auto; }
+    h1 { text-align: center; }
+    .question { margin-bottom: 20px; }
+    .feedback { margin-top: 5px; font-weight: bold; }
+    .correct { color: green; }
+    .incorrect { color: red; }
+    #questions-container { margin-top: 30px; display: none; }
+    select { font-size: 1em; padding: 5px; }
+    h2 { margin-top: 40px; }
+  </style>
+  <script>
+    // Ключ правильных ответов для 5 сценариев
+    const answers = {
+      "Двусторонняя пневмония": {
+        "q1": "Ослабленное везикулярное дыхание",
+        "q2": "Влажные хрипы",
+        "q3": "Ослабленное везикулярное дыхание",
+        "q4": "Влажные хрипы",
+        "q5": "Ослабленное везикулярное дыхание",
+        "q6": "Влажные хрипы",
+        "q7": "Ослабленное везикулярное дыхание",
+        "q8": "Влажные хрипы",
+        "q9": "Ослабленное везикулярное дыхание",
+        "q10": "Влажные хрипы",
+        "q11": "Ослабленное везикулярное дыхание",
+        "q12": "Влажные хрипы",
+        "q13": "Ослабленное везикулярное дыхание",
+        "q14": "Влажные хрипы",
+        "q15": "Ослабленное везикулярное дыхание",
+        "q16": "Влажные хрипы",
+        "q17": "Ослабленное везикулярное дыхание",
+        "q18": "Влажные хрипы",
+        "q19": "Ослабленное везикулярное дыхание",
+        "q20": "Влажные хрипы",
+        "q21": "Есть",
+        "q22": "Двусторонняя пневмония",
+        "q23": "Общий анализ крови. Исследование уровня С-реактивного белка (СРБ) в сыворотке крови. Обзорная рентгенография органов грудной полости в передней и боковой проекциях. Пульсоксиметрия с измерением SpO2."
+      },
+      "Острый вирусный бронхит": {
+        "q1": "Жесткое дыхание",
+        "q2": "Сухие хрипы",
+        "q3": "Жесткое дыхание",
+        "q4": "Сухие хрипы",
+        "q5": "Жесткое дыхание",
+        "q6": "Сухие хрипы",
+        "q7": "Жесткое дыхание",
+        "q8": "Сухие хрипы",
+        "q9": "Жесткое дыхание",
+        "q10": "Сухие хрипы",
+        "q11": "Жесткое дыхание",
+        "q12": "Сухие хрипы",
+        "q13": "Жесткое дыхание",
+        "q14": "Сухие хрипы",
+        "q15": "Жесткое дыхание",
+        "q16": "Сухие хрипы",
+        "q17": "Жесткое дыхание",
+        "q18": "Сухие хрипы",
+        "q19": "Жесткое дыхание",
+        "q20": "Сухие хрипы",
+        "q21": "Нет",
+        "q22": "Острый вирусный бронхит",
+        "q23": "Общий анализ крови. Обзорная рентгенография органов грудной полости в передней прямой и боковой проекциях."
+      },
+      "ОРЗ, ларингит": {
+        "q1": "Везикулярное дыхание",
+        "q2": "Нет",
+        "q3": "Везикулярное дыхание",
+        "q4": "Нет",
+        "q5": "Везикулярное дыхание",
+        "q6": "Нет",
+        "q7": "Везикулярное дыхание",
+        "q8": "Нет",
+        "q9": "Везикулярное дыхание",
+        "q10": "Нет",
+        "q11": "Везикулярное дыхание",
+        "q12": "Нет",
+        "q13": "Везикулярное дыхание",
+        "q14": "Нет",
+        "q15": "Везикулярное дыхание",
+        "q16": "Нет",
+        "q17": "Везикулярное дыхание",
+        "q18": "Нет",
+        "q19": "Везикулярное дыхание",
+        "q20": "Нет",
+        "q21": "Нет",
+        "q22": "ОРЗ, ларингит",
+        "q23": "Общий анализ крови. РТГА."
+      },
+      "ХОБЛ (эмфизематозная форма)": {
+        "q1": "Жесткое дыхание",
+        "q2": "Сухие хрипы",
+        "q3": "Жесткое дыхание",
+        "q4": "Сухие хрипы",
+        "q5": "Жесткое дыхание",
+        "q6": "Сухие хрипы",
+        "q7": "Жесткое дыхание",
+        "q8": "Сухие хрипы",
+        "q9": "Жесткое дыхание",
+        "q10": "Сухие хрипы",
+        "q11": "Жесткое дыхание",
+        "q12": "Сухие хрипы",
+        "q13": "Жесткое дыхание",
+        "q14": "Сухие хрипы",
+        "q15": "Жесткое дыхание",
+        "q16": "Сухие хрипы",
+        "q17": "Жесткое дыхание",
+        "q18": "Сухие хрипы",
+        "q19": "Жесткое дыхание",
+        "q20": "Сухие хрипы",
+        "q21": "Нет",
+        "q22": "ХОБЛ (эмфизематозная форма)",
+        "q23": "Общий анализ крови. Обзорная рентгенография органов грудной полости в передней прямой и боковой проекциях. Микроскопия мокроты. Электрокардиография. Спирометрия. Газовый состав крови."
+      },
+      "Норма": {
+        "q1": "Везикулярное дыхание",
+        "q2": "Нет",
+        "q3": "Везикулярное дыхание",
+        "q4": "Нет",
+        "q5": "Везикулярное дыхание",
+        "q6": "Нет",
+        "q7": "Везикулярное дыхание",
+        "q8": "Нет",
+        "q9": "Везикулярное дыхание",
+        "q10": "Нет",
+        "q11": "Везикулярное дыхание",
+        "q12": "Нет",
+        "q13": "Везикулярное дыхание",
+        "q14": "Нет",
+        "q15": "Везикулярное дыхание",
+        "q16": "Нет",
+        "q17": "Везикулярное дыхание",
+        "q18": "Нет",
+        "q19": "Везикулярное дыхание",
+        "q20": "Нет",
+        "q21": "Нет",
+        "q22": "Норма",
+        "q23": "Не требуются."
+      }
+    };
+
+    // Проверка одного ответа
+    function checkAnswer(qName, feedbackId) {
+      const selected = document.querySelector(`input[name="${qName}"]:checked`);
+      const scenario = document.getElementById("scenario-select").value;
+      if (!selected) return;
+      const userValue = selected.value;
+      const correctValue = answers[scenario][qName];
+      const fb = document.getElementById(feedbackId);
+      if (userValue === correctValue) {
+        fb.textContent = "Правильно!";
+        fb.className = "feedback correct";
+      } else {
+        fb.textContent = "Неправильно. Правильный ответ: " + correctValue;
+        fb.className = "feedback incorrect";
+      }
+    }
+
+    // Показать или скрыть блок с вопросами
+    function onScenarioChange() {
+      const sel = document.getElementById("scenario-select");
+      const container = document.getElementById("questions-container");
+      if (sel.value === "") {
+        container.style.display = "none";
+      } else {
+        // Сбросить все предыдущие ответы и отзывы
+        const inputs = container.querySelectorAll("input[type=radio]");
+        inputs.forEach(inp => inp.checked = false);
+        const feedbacks = container.querySelectorAll(".feedback");
+        feedbacks.forEach(fb => { fb.textContent = ""; fb.className = "feedback"; });
+        container.style.display = "block";
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("scenario-select").addEventListener("change", onScenarioChange);
+    });
+  </script>
+</head>
+<body>
+  <h1>Дыхательная система – ГИА для выпускников лечебного факультета 2025</h1>
+  <p>Выберите клиническую ситуацию (сценарий):</p>
+  <select id="scenario-select">
+    <option value="">-- выберите ситуацию --</option>
+    <option value="Двусторонняя пневмония">Ситуация 1: Двусторонняя пневмония</option>
+    <option value="Острый вирусный бронхит">Ситуация 2: Острый вирусный бронхит</option>
+    <option value="ОРЗ, ларингит">Ситуация 3: ОРЗ, ларингит</option>
+    <option value="ХОБЛ (эмфизематозная форма)">Ситуация 4: ХОБЛ (эмфизематозная форма)</option>
+    <option value="Норма">Ситуация 5: Норма</option>
+  </select>
+
+  <div id="questions-container">
+    <h2>Вопросы</h2>
+
+    <!-- Вопрос 1 -->
+    <div class="question">
+      <p><strong>Вопрос 1. Верхние отделы легких справа спереди. Основной дыхательный шум:</strong></p>
+      <label><input type="radio" name="q1" value="Везикулярное дыхание" onclick="checkAnswer('q1','fb1')"> a. Везикулярное дыхание</label><br>
+      <label><input type="radio" name="q1" value="Жесткое дыхание" onclick="checkAnswer('q1','fb1')"> b. Жесткое дыхание</label><br>
+      <label><input type="radio" name="q1" value="Ослабленное везикулярное дыхание" onclick="checkAnswer('q1','fb1')"> c. Ослабленное везикулярное дыхание</label>
+      <div id="fb1" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 2 -->
+    <div class="question">
+      <p><strong>Вопрос 2. Верхние отделы легких справа спереди. Дополнительный дыхательный шум:</strong></p>
+      <label><input type="radio" name="q2" value="Нет" onclick="checkAnswer('q2','fb2')"> a. Нет</label><br>
+      <label><input type="radio" name="q2" value="Влажные хрипы" onclick="checkAnswer('q2','fb2')"> b. Влажные хрипы</label><br>
+      <label><input type="radio" name="q2" value="Сухие хрипы" onclick="checkAnswer('q2','fb2')"> c. Сухие хрипы</label>
+      <div id="fb2" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 3 -->
+    <div class="question">
+      <p><strong>Вопрос 3. Верхние отделы легких слева спереди. Основной дыхательный шум:</strong></p>
+      <label><input type="radio" name="q3" value="Жесткое дыхание" onclick="checkAnswer('q3','fb3')"> a. Жесткое дыхание</label><br>
+      <label><input type="radio" name="q3" value="Ослабленное везикулярное дыхание" onclick="checkAnswer('q3','fb3')"> b. Ослабленное везикулярное дыхание</label><br>
+      <label><input type="radio" name="q3" value="Везикулярное дыхание" onclick="checkAnswer('q3','fb3')"> c. Везикулярное дыхание</label>
+      <div id="fb3" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 4 -->
+    <div class="question">
+      <p><strong>Вопрос 4. Верхние отделы легких слева спереди. Дополнительный дыхательный шум:</strong></p>
+      <label><input type="radio" name="q4" value="Нет" onclick="checkAnswer('q4','fb4')"> a. Нет</label><br>
+      <label><input type="radio" name="q4" value="Сухие хрипы" onclick="checkAnswer('q4','fb4')"> b. Сухие хрипы</label><br>
+      <label><input type="radio" name="q4" value="Влажные хрипы" onclick="checkAnswer('q4','fb4')"> c. Влажные хрипы</label>
+      <div id="fb4" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 5 -->
+    <div class="question">
+      <p><strong>Вопрос 5. Нижние отделы легких справа спереди. Основной дыхательный шум:</strong></p>
+      <label><input type="radio" name="q5" value="Везикулярное дыхание" onclick="checkAnswer('q5','fb5')"> a. Везикулярное дыхание</label><br>
+      <label><input type="radio" name="q5" value="Жесткое дыхание" onclick="checkAnswer('q5','fb5')"> b. Жесткое дыхание</label><br>
+      <label><input type="radio" name="q5" value="Ослабленное везикулярное дыхание" onclick="checkAnswer('q5','fb5')"> c. Ослабленное везикулярное дыхание</label>
+      <div id="fb5" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 6 -->
+    <div class="question">
+      <p><strong>Вопрос 6. Нижние отделы легких справа спереди. Дополнительный дыхательный шум:</strong></p>
+      <label><input type="radio" name="q6" value="Сухие хрипы" onclick="checkAnswer('q6','fb6')"> a. Сухие хрипы</label><br>
+      <label><input type="radio" name="q6" value="Влажные хрипы" onclick="checkAnswer('q6','fb6')"> b. Влажные хрипы</label><br>
+      <label><input type="radio" name="q6" value="Нет" onclick="checkAnswer('q6','fb6')"> c. Нет</label>
+      <div id="fb6" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 7 -->
+    <div class="question">
+      <p><strong>Вопрос 7. Нижние отделы легких слева спереди. Основной дыхательный шум:</strong></p>
+      <label><input type="radio" name="q7" value="Жесткое дыхание" onclick="checkAnswer('q7','fb7')"> a. Жесткое дыхание</label><br>
+      <label><input type="radio" name="q7" value="Ослабленное везикулярное дыхание" onclick="checkAnswer('q7','fb7')"> b. Ослабленное везикулярное дыхание</label><br>
+      <label><input type="radio" name="q7" value="Везикулярное дыхание" onclick="checkAnswer('q7','fb7')"> c. Везикулярное дыхание</label>
+      <div id="fb7" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 8 -->
+    <div class="question">
+      <p><strong>Вопрос 8. Нижние отделы легких слева спереди. Дополнительный дыхательный шум:</strong></p>
+      <label><input type="radio" name="q8" value="Сухие хрипы" onclick="checkAnswer('q8','fb8')"> a. Сухие хрипы</label><br>
+      <label><input type="radio" name="q8" value="Нет" onclick="checkAnswer('q8','fb8')"> b. Нет</label><br>
+      <label><input type="radio" name="q8" value="Влажные хрипы" onclick="checkAnswer('q8','fb8')"> c. Влажные хрипы</label>
+      <div id="fb8" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 9 -->
+    <div class="question">
+      <p><strong>Вопрос 9. Боковые отделы легких слева. Основной дыхательный шум:</strong></p>
+      <label><input type="radio" name="q9" value="Ослабленное везикулярное дыхание" onclick="checkAnswer('q9','fb9')"> a. Ослабленное везикулярное дыхание</label><br>
+      <label><input type="radio" name="q9" value="Везикулярное дыхание" onclick="checkAnswer('q9','fb9')"> b. Везикулярное дыхание</label><br>
+      <label><input type="radio" name="q9" value="Жесткое дыхание" onclick="checkAnswer('q9','fb9')"> c. Жесткое дыхание</label>
+      <div id="fb9" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 10 -->
+    <div class="question">
+      <p><strong>Вопрос 10. Боковые отделы легких слева. Дополнительный дыхательный шум:</strong></p>
+      <label><input type="radio" name="q10" value="Влажные хрипы" onclick="checkAnswer('q10','fb10')"> a. Влажные хрипы</label><br>
+      <label><input type="radio" name="q10" value="Сухие хрипы" onclick="checkAnswer('q10','fb10')"> b. Сухие хрипы</label><br>
+      <label><input type="radio" name="q10" value="Нет" onclick="checkAnswer('q10','fb10')"> c. Нет</label>
+      <div id="fb10" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 11 -->
+    <div class="question">
+      <p><strong>Вопрос 11. Боковые отделы легких справа. Основной дыхательный шум:</strong></p>
+      <label><input type="radio" name="q11" value="Везикулярное дыхание" onclick="checkAnswer('q11','fb11')"> a. Везикулярное дыхание</label><br>
+      <label><input type="radio" name="q11" value="Ослабленное везикулярное дыхание" onclick="checkAnswer('q11','fb11')"> b. Ослабленное везикулярное дыхание</label><br>
+      <label><input type="radio" name="q11" value="Жесткое дыхание" onclick="checkAnswer('q11','fb11')"> c. Жесткое дыхание</label>
+      <div id="fb11" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 12 -->
+    <div class="question">
+      <p><strong>Вопрос 12. Боковые отделы легких справа. Дополнительный дыхательный шум:</strong></p>
+      <label><input type="radio" name="q12" value="Сухие хрипы" onclick="checkAnswer('q12','fb12')"> a. Сухие хрипы</label><br>
+      <label><input type="radio" name="q12" value="Влажные хрипы" onclick="checkAnswer('q12','fb12')"> b. Влажные хрипы</label><br>
+      <label><input type="radio" name="q12" value="Нет" onclick="checkAnswer('q12','fb12')"> c. Нет</label>
+      <div id="fb12" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 13 -->
+    <div class="question">
+      <p><strong>Вопрос 13. Верхние отделы легких справа сзади. Основной дыхательный шум:</strong></p>
+      <label><input type="radio" name="q13" value="Жесткое дыхание" onclick="checkAnswer('q13','fb13')"> a. Жесткое дыхание</label><br>
+      <label><input type="radio" name="q13" value="Ослабленное везикулярное дыхание" onclick="checkAnswer('q13','fb13')"> b. Ослабленное везикулярное дыхание</label><br>
+      <label><input type="radio" name="q13" value="Везикулярное дыхание" onclick="checkAnswer('q13','fb13')"> c. Везикулярное дыхание</label>
+      <div id="fb13" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 14 -->
+    <div class="question">
+      <p><strong>Вопрос 14. Верхние отделы легких справа сзади. Дополнительный дыхательный шум:</strong></p>
+      <label><input type="radio" name="q14" value="Нет" onclick="checkAnswer('q14','fb14')"> a. Нет</label><br>
+      <label><input type="radio" name="q14" value="Сухие хрипы" onclick="checkAnswer('q14','fb14')"> b. Сухие хрипы</label><br>
+      <label><input type="radio" name="q14" value="Влажные хрипы" onclick="checkAnswer('q14','fb14')"> c. Влажные хрипы</label>
+      <div id="fb14" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 15 -->
+    <div class="question">
+      <p><strong>Вопрос 15. Верхние отделы легких слева сзади. Основной дыхательный шум:</strong></p>
+      <label><input type="radio" name="q15" value="Жесткое дыхание" onclick="checkAnswer('q15','fb15')"> a. Жесткое дыхание</label><br>
+      <label><input type="radio" name="q15" value="Ослабленное везикулярное дыхание" onclick="checkAnswer('q15','fb15')"> b. Ослабленное везикулярное дыхание</label><br>
+      <label><input type="radio" name="q15" value="Везикулярное дыхание" onclick="checkAnswer('q15','fb15')"> c. Везикулярное дыхание</label>
+      <div id="fb15" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 16 -->
+    <div class="question">
+      <p><strong>Вопрос 16. Верхние отделы легких слева сзади. Дополнительный дыхательный шум:</strong></p>
+      <label><input type="radio" name="q16" value="Влажные хрипы" onclick="checkAnswer('q16','fb16')"> a. Влажные хрипы</label><br>
+      <label><input type="radio" name="q16" value="Нет" onclick="checkAnswer('q16','fb16')"> b. Нет</label><br>
+      <label><input type="radio" name="q16" value="Сухие хрипы" onclick="checkAnswer('q16','fb16')"> c. Сухие хрипы</label>
+      <div id="fb16" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 17 -->
+    <div class="question">
+      <p><strong>Вопрос 17. Нижние отделы легких справа сзади. Основной дыхательный шум:</strong></p>
+      <label><input type="radio" name="q17" value="Везикулярное дыхание" onclick="checkAnswer('q17','fb17')"> a. Везикулярное дыхание</label><br>
+      <label><input type="radio" name="q17" value="Ослабленное везикулярное дыхание" onclick="checkAnswer('q17','fb17')"> b. Ослабленное везикулярное дыхание</label><br>
+      <label><input type="radio" name="q17" value="Жесткое дыхание" onclick="checkAnswer('q17','fb17')"> c. Жесткое дыхание</label>
+      <div id="fb17" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 18 -->
+    <div class="question">
+      <p><strong>Вопрос 18. Нижние отделы легких справа сзади. Дополнительный дыхательный шум:</strong></p>
+      <label><input type="radio" name="q18" value="Влажные хрипы" onclick="checkAnswer('q18','fb18')"> a. Влажные хрипы</label><br>
+      <label><input type="radio" name="q18" value="Сухие хрипы" onclick="checkAnswer('q18','fb18')"> b. Сухие хрипы</label><br>
+      <label><input type="radio" name="q18" value="Нет" onclick="checkAnswer('q18','fb18')"> c. Нет</label>
+      <div id="fb18" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 19 -->
+    <div class="question">
+      <p><strong>Вопрос 19. Нижние отделы легких слева сзади. Основной дыхательный шум:</strong></p>
+      <label><input type="radio" name="q19" value="Везикулярное дыхание" onclick="checkAnswer('q19','fb19')"> a. Везикулярное дыхание</label><br>
+      <label><input type="radio" name="q19" value="Жесткое дыхание" onclick="checkAnswer('q19','fb19')"> b. Жесткое дыхание</label><br>
+      <label><input type="radio" name="q19" value="Ослабленное везикулярное дыхание" onclick="checkAnswer('q19','fb19')"> c. Ослабленное везикулярное дыхание</label>
+      <div id="fb19" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 20 -->
+    <div class="question">
+      <p><strong>Вопрос 20. Нижние отделы легких слева сзади. Дополнительный дыхательный шум:</strong></p>
+      <label><input type="radio" name="q20" value="Сухие хрипы" onclick="checkAnswer('q20','fb20')"> a. Сухие хрипы</label><br>
+      <label><input type="radio" name="q20" value="Влажные хрипы" onclick="checkAnswer('q20','fb20')"> b. Влажные хрипы</label><br>
+      <label><input type="radio" name="q20" value="Нет" onclick="checkAnswer('q20','fb20')"> c. Нет</label>
+      <div id="fb20" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 21 -->
+    <div class="question">
+      <p><strong>Вопрос 21. Изменение локализации дополнительных шумов:</strong></p>
+      <label><input type="radio" name="q21" value="Есть" onclick="checkAnswer('q21','fb21')"> a. Есть</label><br>
+      <label><input type="radio" name="q21" value="Нет" onclick="checkAnswer('q21','fb21')"> b. Нет</label>
+      <div id="fb21" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 22 -->
+    <div class="question">
+      <p><strong>Вопрос 22. Предварительная диагностическая гипотеза:</strong></p>
+      <label><input type="radio" name="q22" value="ХОБЛ (эмфизематозная форма)" onclick="checkAnswer('q22','fb22')"> a. ХОБЛ (эмфизематозная форма)</label><br>
+      <label><input type="radio" name="q22" value="ОРЗ, ларингит" onclick="checkAnswer('q22','fb22')"> b. ОРЗ, ларингит</label><br>
+      <label><input type="radio" name="q22" value="Острый вирусный бронхит" onclick="checkAnswer('q22','fb22')"> c. Острый вирусный бронхит</label><br>
+      <label><input type="radio" name="q22" value="Норма" onclick="checkAnswer('q22','fb22')"> d. Норма</label><br>
+      <label><input type="radio" name="q22" value="Двусторонняя пневмония" onclick="checkAnswer('q22','fb22')"> e. Двусторонняя пневмония</label>
+      <div id="fb22" class="feedback"></div>
+    </div>
+
+    <!-- Вопрос 23 -->
+    <div class="question">
+      <p><strong>Вопрос 23. Дополнительные исследования:</strong></p>
+      <label><input type="radio" name="q23" value="Общий анализ крови. Исследование уровня С-реактивного белка (СРБ) в сыворотке крови. Обзорная рентгенография органов грудной полости в передней и боковой проекциях. Пульсоксиметрия с измерением SpO2." onclick="checkAnswer('q23','fb23')"> a. Общий анализ крови. Исследование уровня С-реактивного белка (СРБ) в сыворотке крови. Обзорная рентгенография органов грудной полости в передней и боковой проекциях. Пульсоксиметрия с измерением SpO2.</label><br>
+      <label><input type="radio" name="q23" value="Не требуются." onclick="checkAnswer('q23','fb23')"> b. Не требуются.</label><br>
+      <label><input type="radio" name="q23" value="Общий анализ крови. РТГА." onclick="checkAnswer('q23','fb23')"> c. Общий анализ крови. РТГА.</label><br>
+      <label><input type="radio" name="q23" value="Общий анализ крови. Обзорная рентгенография органов грудной полости в передней прямой и боковой проекциях." onclick="checkAnswer('q23','fb23')"> d. Общий анализ крови. Обзорная рентгенография органов грудной полости в передней прямой и боковой проекциях.</label><br>
+      <label><input type="radio" name="q23" value="Общий анализ крови. Обзорная рентгенография органов грудной полости в передней прямой и боковой проекциях. Микроскопия мокроты. Электрокардиография. Спирометрия. Газовый состав крови." onclick="checkAnswer('q23','fb23')"> e. Общий анализ крови. Обзорная рентгенография органов грудной полости в передней прямой и боковой проекциях. Микроскопия мокроты. Электрокардиография. Спирометрия. Газовый состав крови.</label>
+      <div id="fb23" class="feedback"></div>
+    </div>
+
+  </div>
+</body>
+</html>
